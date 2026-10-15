@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: support-agent
+
+  data:
+    mongodb:
+      # Vector search needs MongoDB Atlas (cloud) or the mongodb-atlas-local Docker image (see docker-compose.yml)
+      uri: ${MONGODB_URI:mongodb://localhost:27017/?directConnection=true}
+      database: support
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.2
+      embedding:
+        options:
+          model: text-embedding-3-small
+
+    vectorstore:
+      mongodb:
+        collection-name: policy_vectors
+        index-name: policy_vector_index
+        path-name: embedding
+        initialize-schema: true   # creates the vector search index on startup
+
+    mcp:
+      server:
+        name: support-tools
+        version: 1.0.0
+        type: SYNC
+        protocol: STREAMABLE      # MCP endpoint is served at /mcp
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.ai: INFO
